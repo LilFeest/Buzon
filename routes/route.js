@@ -1,29 +1,32 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
+const areaController = require('../controllers/areaController');
 
-//ruta mainpage
-router.get('/',(req,res)=>{
-    res.render('index')
-})
+// Ruta principal
+router.get('/', (req, res) => {
+    res.render('index');
+});
 
-//ruta Aviso
+// Ruta Aviso
 router.get('/aviso', (req, res) => {
-    res.render('aviso'); 
+    res.render('aviso');
 });
 
-// Ruta del formulario de quejas (GET)
-// En tu archivo routes/route.js
-router.get('/quejas', (req, res) => {
-    res.render('queja', {  // Cambiado de 'queja-anonima' a 'queja'
-        areas: [
-            { id: 1, nombre: 'Recursos Humanos' },
-            { id: 2, nombre: 'TI' }
-        ]
-    });
+// Ruta de quejas (GET)
+router.get('/quejas', async (req, res) => {
+    try {
+        const areas = await areaController.obtenerAreas();
+        res.render('queja', { areas });
+    } catch (error) {
+        res.render('queja', {
+            areas: [],
+            error: 'Error al cargar las áreas'
+        });
+    }
 });
-// Ruta para procesar el formulario (POST) - Mock para frontend
+
+// Ruta de quejas (POST)
 router.post('/quejas', (req, res) => {
-    // Simular éxito (sin base de datos)
     console.log('Queja recibida (simulación):', req.body);
     res.send(`
         <script>
@@ -33,5 +36,22 @@ router.post('/quejas', (req, res) => {
     `);
 });
 
+// Ruta para mostrar formulario de áreas (GET)
+router.get('/areas', (req, res) => {
+    res.render('area', {
+        success: req.query.success,
+        message: req.query.message
+    });
+});
+
+// Ruta para procesar áreas (POST)
+router.post('/areas', async (req, res) => {
+    try {
+        await areaController.agregarArea(req.body);
+        res.redirect('/areas?success=true&message=Área registrada exitosamente');
+    } catch (error) {
+        res.redirect(`/areas?success=false&message=${error.message}`);
+    }
+});
 
 module.exports = router;

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Área</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <h2>Agregar Nueva Área</h2>
+    
+    <form method="POST" action="/areas">
+        <div class="form-group">
+            <label for="nombre">Nombre del Área (máx. 30 caracteres)</label>
+            <input type="text" id="nombre" name="nombre" required maxlength="30">
+        </div>
+        
+        <div class="form-group">
+            <label for="abreviatura">Abreviatura (5 caracteres exactos)</label>
+            <input type="text" id="abreviatura" name="abreviatura" required maxlength="5">
+        </div>
+        
+        <div class="form-group">
+            <label for="correo">Correo Electrónico</label>
+            <input type="email" id="correo" name="correo" required maxlength="50">
+        </div>
+        
+        <button type="submit">Guardar Área</button>
+    </form>
+
+
+</body>
+</html>
