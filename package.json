@@ -1,10 +1,12 @@
 {
-  "name": "prueba",
+  "name": "buzon",
   "version": "1.0.0",
   "description": "proyecto de prueba 1",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -21,5 +23,9 @@
     "env": "^0.0.2",
     "express": "^4.21.2",
     "mssql": "^11.0.1"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

@@ -97,3 +97,27 @@ footer {
     bottom: 0;
     width: 100%;
 }
+/* Estilos adicionales para el botón de queja */
+.complaint-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    z-index: 1000;
+}
+
+.complaint-btn:hover {
+    background-color: #ff5252;
+}
+
+/* Asegurar que el navbar tenga posición relativa */
+#navbar {
+    position: relative;
+}
