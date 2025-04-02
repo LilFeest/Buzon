@@ -21,7 +21,7 @@
                 </label>
             </div>
             
-            <button id="procederBtn" class="btn" disabled>Proceder con la queja</button>
+            <button id="procederBtn" class="btn" disabled onclick="redirigirAQuejas()">Proceder con la queja</button>
         </div>
     </div>
 
@@ -29,6 +29,16 @@
         document.getElementById('confirmar').addEventListener('change', function() {
             document.getElementById('procederBtn').disabled = !this.checked;
         });
+
+         // Validación del checkbox
+        document.getElementById('confirmar').addEventListener('change', function() {
+        document.getElementById('procederBtn').disabled = !this.checked;
+        });
+
+        // Función para redirigir
+        function redirigirAQuejas() {
+            window.location.href = '/quejas';
+        }
     </script>
 </body>
 </html>
