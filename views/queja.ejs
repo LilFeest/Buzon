@@ -15,7 +15,7 @@
             <!-- Mensaje de éxito se mostrará aquí -->
         </div>
         
-        <form method="POST" action="/quejas" enctype="multipart/form-data" class="complaint-form" id="complaintForm">
+        <form method="POST" action="/quejas" class="complaint-form" id="complaintForm">
             <div class="form-group">
                 <label for="titulo" class="form-label">Título de la Queja*</label>
                 <input type="text" id="titulo" name="titulo" class="form-input" required>
@@ -26,10 +26,13 @@
                 <label for="area_id" class="form-label">Área/Departamento*</label>
                 <select id="area_id" name="area_id" class="form-input" required>
                     <option value="">Seleccione un área</option>
-                    <option value="1">Recursos Humanos</option>
-                    <option value="2">TI</option>
-                    <option value="3">Finanzas</option>
-                    <option value="4">Operaciones</option>
+                    <% if (areas && areas.length > 0) { %>
+                        <% areas.forEach(area => { %>
+                            <option value="<%= area.id %>"><%= area.nombre %></option>
+                        <% }); %>
+                    <% } else { %>
+                        <option value="" disabled>No hay áreas disponibles</option>
+                    <% } %>
                 </select>
                 <div id="area_id-error" class="error-message">Este campo es obligatorio</div>
             </div>
