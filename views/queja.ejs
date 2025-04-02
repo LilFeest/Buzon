@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Queja Anónima</title>
+    <link rel="stylesheet" href="/css/stylesQueja.css">
+    
+</head>
+<body>
+    <div class="form-container">
+        <h2>Buzón de Quejas Anónimas</h2>
+        
+        <div id="success-message" class="alert-success" style="display: none;">
+            <!-- Mensaje de éxito se mostrará aquí -->
+        </div>
+        
+        <form method="POST" action="/quejas" enctype="multipart/form-data" class="complaint-form" id="complaintForm">
+            <div class="form-group">
+                <label for="titulo" class="form-label">Título de la Queja*</label>
+                <input type="text" id="titulo" name="titulo" class="form-input" required>
+                <div id="titulo-error" class="error-message">Este campo es obligatorio</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="area_id" class="form-label">Área/Departamento*</label>
+                <select id="area_id" name="area_id" class="form-input" required>
+                    <option value="">Seleccione un área</option>
+                    <option value="1">Recursos Humanos</option>
+                    <option value="2">TI</option>
+                    <option value="3">Finanzas</option>
+                    <option value="4">Operaciones</option>
+                </select>
+                <div id="area_id-error" class="error-message">Este campo es obligatorio</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="contenido" class="form-label">Descripción Detallada*</label>
+                <textarea id="contenido" name="contenido" class="form-textarea" required></textarea>
+                <div id="contenido-error" class="error-message">Este campo es obligatorio</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="adjuntos" class="form-label">Documentos Adjuntos (Opcional)</label>
+                <input type="file" id="adjuntos" name="adjuntos" class="form-file" multiple>
+                <span class="help-text">Formatos admitidos: PDF, JPG, PNG</span>
+            </div>
+            
+            <button type="submit" class="submit-btn">Enviar Queja Anónima</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('complaintForm');
+            const requiredFields = ['titulo', 'area_id', 'contenido'];
+            
+            // Mostrar/ocultar mensajes de error al interactuar con los campos
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorElement = document.getElementById(`${fieldId}-error`);
+                
+                field.addEventListener('input', () => {
+                    if (field.value.trim()) {
+                        errorElement.style.display = 'none';
+                    } else {
+                        errorElement.style.display = 'block';
+                    }
+                });
+            });
+            
+            // Validación al enviar el formulario
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+                
+                // Validar campos requeridos
+                requiredFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    const errorElement = document.getElementById(`${fieldId}-error`);
+                    
+                    if (!field.value.trim()) {
+                        errorElement.style.display = 'block';
+                        isValid = false;
+                    } else {
+                        errorElement.style.display = 'none';
+                    }
+                });
+                
+                // Simular envío exitoso (para demostración frontend)
+                if (isValid) {
+                    document.getElementById('success-message').textContent = '¡Tu queja ha sido enviada exitosamente!';
+                    document.getElementById('success-message').style.display = 'block';
+                    form.reset();
+                    
+                    // Ocultar mensaje después de 5 segundos
+                    setTimeout(() => {
+                        document.getElementById('success-message').style.display = 'none';
+                    }, 5000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
