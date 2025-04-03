@@ -13,7 +13,7 @@ const areaController = {
                     INSERT INTO area (nombre, abreviatura, correo)
                     VALUES (@nombre, @abreviatura, @correo)
                 `);
-            
+            console.log(result);
             return { success: true, message: 'Área registrada exitosamente' };
         } catch (error) {
             console.error('Error al registrar área:', error);

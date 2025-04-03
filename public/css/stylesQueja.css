@@ -1,11 +1,17 @@
+:root {
+    --color-primario: #0039a1;
+    --color-secundario: #ff8c00;
+    
+}
 header {
     display: flex;
     align-items: center;
-    background-color: #003087; /* Azul oscuro */
+    background-color: white;
     padding: 10px 20px;
     color: white;
     height: 60px;
-    position: relative; /* Necesario para posicionar el título de manera absoluta */
+    border-bottom: 5px solid #0039a1;
+    position: relative;
 }
 .logo img {
     height: 60px; /* Ajusta según el tamaño de tu logo */
@@ -17,24 +23,9 @@ header {
     position: absolute; /* Posicionamiento absoluto para centrar */
     left: 50%;
     transform: translateX(-50%); /* Centra horizontalmente */
-    color: white;
+    color: #003087;
 }
 
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.user-info span {
-    font-size: 16px;
-}
-
-.user-info img {
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
-}
 
 /* Estilos básicos */
 body {
@@ -90,7 +81,7 @@ h2 {
     margin: 20px auto; /* Centrado horizontal */
 }
 .submit-btn:hover {
-    background-color: #45a049;
+    background-color: #ff8c00;
 }
 .help-text {
     font-size: 12px;

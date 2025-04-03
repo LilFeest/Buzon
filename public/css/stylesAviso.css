@@ -1,4 +1,9 @@
 /* Estilos generales */
+:root {
+    --color-primario: #0039a1;
+    --color-secundario: #ff8c00;
+    
+}
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -6,6 +11,10 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
+}
+body h1{
+    text-align: center;
+    color: var(--color-primario);
 }
 
 /* Contenedor principal */
@@ -25,7 +34,7 @@ body {
     padding: 30px;
     max-width: 600px;
     width: 100%;
-    border-top: 4px solid #2c3e50;
+    border-top: 4px solid #ff8c00;
 }
 
 .aviso h1 {

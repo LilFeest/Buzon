@@ -1,7 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const connection = require('../config/dbconfig.js')
 const areaController = require('../controllers/areaController');
 const quejaController = require('../controllers/quejaController');
+const reporteController = require('../controllers/reporteController');
+
+
+router.post('/agregarqueja',quejaController.guardarqueja)
+
 
 // Ruta principal
 router.get('/', (req, res) => {
@@ -13,22 +19,17 @@ router.get('/aviso', (req, res) => {
     res.render('aviso');
 });
 
-// Ruta de quejas (GET)
+// Ruta de quejas (GET) get de areas en el formulario de quejas
 router.get('/quejas', async (req, res) => {
-    try {
-        const areas = await quejaController.obtenerAreas();
+    connection.query('SELECT areaId as id, nombre FROM [Buzon].[dbo].[area] ORDER BY nombre', (error, areasResults) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).send('Error en la consulta');
+        }
         res.render('queja', {
-            areas: areas,
-            success: req.query.success,
-            message: req.query.message
-        });
-    } catch (error) {
-        res.render('queja', {
-            areas: [],
-            success: false,
-            message: 'Error al cargar las áreas'
-        });
-    }
+            areas: areasResults.recordset,
+          });    
+    })
 });
 
 
@@ -53,27 +54,26 @@ router.post('/areas', async (req, res) => {
 router.post('/quejas', async (req, res) => {
     try {
         await quejaController.agregarQueja(req.body);
+        console.log(req.body)
         res.redirect('/quejas?success=true&message=Queja enviada exitosamente');
+        
     } catch (error) {
         res.redirect(`/quejas?success=false&message=${encodeURIComponent(error.message)}`);
     }
 });
 
+
+
 router.get('/reportes', async (req, res) => {
-    try {
-        const reportData = await reporteController.getReportData();
-        res.render('reporte', { // Cambio aquí: 'reportes' a 'reporte'
-            data: reportData,
-            success: req.query.success,
-            message: req.query.message
-        });
-    } catch (error) {
-        res.render('reporte', { // Cambio aquí: 'reportes' a 'reporte'
-            data: [],
-            success: false,
-            message: 'Error al cargar los datos de reportes'
-        });
-    }
+    connection.query('SELECT q.quejaId, q.quejaTitulo, q.contenido, q.fechaIn, q.estado, a.nombre AS area FROM [Buzon].[dbo].[area] q INNER JOIN area a ON q.areaId = a.areaId ORDER BY q.fechaIn desc;', (error, quejaResults) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).send('Error en la consulta');
+        }
+        res.render('reporte', {
+            quejas: quejaResults.recordset,
+          });    
+    })
 });
 
 module.exports = router;

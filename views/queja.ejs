@@ -11,9 +11,9 @@
 
     <header>
         <div class="logo">
-            <img src="https://scontent.ftgu3-3.fna.fbcdn.net/v/t39.30808-6/419899675_762364185923648_9170688382196837389_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeH4k14RMI3T9dM484AX9hDvjjwdVGWyEt-OPB1UZbIS36NBTZtPzgy6LF7o2E_-7UudZOU59DCfing2PMJoPSio&_nc_ohc=TFDQoBr8yVcQ7kNvgHnTGx8&_nc_oc=AdkgW4cSZn9XcKt6m6QrsAaIglsiifjzDLyZLEQsBJFm_F5EjBvPc87gE8Isv69P0tJE5xOrYemxyin_t72YHXqQ&_nc_zt=23&_nc_ht=scontent.ftgu3-3.fna&_nc_gid=xYwJ9ES_bB6gKw9UANtMBg&oh=00_AYHwKfkiJawV4VjjvijE3Xem6TBosFW9QYpYqRIRllsGhA&oe=67F3F8F3" alt="Logo"> <!-- Reemplaza con la URL de tu logo -->
+            <img src="https://consucoop.hn/wp-content/uploads/2024/01/LOGO-CONSUCOOP.png" alt="Logo"> <!-- Reemplaza con la URL de tu logo -->
         </div>
-        
+        <h1 class="header-title">Buzon de Quejas</h1>
     </header>
     <br>
     <div class="form-container">
@@ -23,7 +23,7 @@
             <!-- Mensaje de éxito se mostrará aquí -->
         </div>
         
-        <form method="POST" action="/quejas" class="complaint-form" id="complaintForm">
+        <form method="POST" action="/agregarqueja" class="complaint-form" id="complaintForm">
             <div class="form-group">
                 <label for="titulo" class="form-label">Título</label>
                 <input type="text" id="titulo" name="titulo" class="form-input" required>
@@ -61,7 +61,7 @@
         </form>
     </div>
 
-    <script>
+    <!--script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('complaintForm');
             const requiredFields = ['titulo', 'area_id', 'contenido'];
@@ -99,7 +99,7 @@
                 });
                 
                 // Simular envío exitoso (para demostración frontend)
-                if (isValid) {
+              /*  if (isValid) {
                     document.getElementById('success-message').textContent = '¡Tu queja ha sido enviada exitosamente!';
                     document.getElementById('success-message').style.display = 'block';
                     form.reset();
@@ -108,9 +108,9 @@
                     setTimeout(() => {
                         document.getElementById('success-message').style.display = 'none';
                     }, 5000);
-                }
+                }*/
             });
         });
-    </script>
+    </script-->
 </body>
 </html>
