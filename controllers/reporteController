@@ -1,0 +1,17 @@
+const getReportData = async () => {
+    try {
+        // Aquí iría tu lógica real de base de datos
+        const sampleData = [
+            { id: 1, descripcion: "Reporte 1", fecha: "2025-04-01", estado: "Activo", categoria: "General" },
+            { id: 2, descripcion: "Reporte 2", fecha: "2025-04-02", estado: "Pendiente", categoria: "Técnico" },
+            { id: 3, descripcion: "Reporte 3", fecha: "2025-04-03", estado: "Resuelto", categoria: "Soporte" }
+        ];
+        return sampleData;
+    } catch (error) {
+        throw new Error('Error al obtener datos de reportes');
+    }
+};
+
+module.exports = {
+    getReportData
+};

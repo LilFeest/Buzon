@@ -59,4 +59,21 @@ router.post('/quejas', async (req, res) => {
     }
 });
 
+router.get('/reportes', async (req, res) => {
+    try {
+        const reportData = await reporteController.getReportData();
+        res.render('reporte', { // Cambio aquí: 'reportes' a 'reporte'
+            data: reportData,
+            success: req.query.success,
+            message: req.query.message
+        });
+    } catch (error) {
+        res.render('reporte', { // Cambio aquí: 'reportes' a 'reporte'
+            data: [],
+            success: false,
+            message: 'Error al cargar los datos de reportes'
+        });
+    }
+});
+
 module.exports = router;

@@ -1,4 +1,4 @@
-const sql = require('mssql');
+/*const sql = require('mssql');
 
 const config = {
     user: "APPLOG01",
@@ -37,4 +37,4 @@ connectToDB();
 
 
 // No estamos ejecutando ninguna consulta en este ejemplo
-module.exports = {sql, poolPromise};
+module.exports = {sql, poolPromise};*/

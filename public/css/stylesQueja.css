@@ -1,9 +1,47 @@
+header {
+    display: flex;
+    align-items: center;
+    background-color: #003087; /* Azul oscuro */
+    padding: 10px 20px;
+    color: white;
+    height: 60px;
+    position: relative; /* Necesario para posicionar el título de manera absoluta */
+}
+.logo img {
+    height: 60px; /* Ajusta según el tamaño de tu logo */
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: bold;
+    position: absolute; /* Posicionamiento absoluto para centrar */
+    left: 50%;
+    transform: translateX(-50%); /* Centra horizontalmente */
+    color: white;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info span {
+    font-size: 16px;
+}
+
+.user-info img {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+}
+
 /* Estilos básicos */
 body {
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
     margin: 0;
-    padding: 20px;
+    padding: 0;
 }
 .form-container {
     max-width: 800px;
@@ -39,15 +77,17 @@ h2 {
     resize: vertical;
 }
 .submit-btn {
-    background-color: #4CAF50;
+    background-color: #003087;
     color: white;
     border: none;
     padding: 12px 20px;
     font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
-    width: 100%;
+    width: 50%;
     transition: background-color 0.3s;
+    display: block; /* Para centrar */
+    margin: 20px auto; /* Centrado horizontal */
 }
 .submit-btn:hover {
     background-color: #45a049;
