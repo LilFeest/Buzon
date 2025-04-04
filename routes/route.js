@@ -4,9 +4,10 @@ const connection = require('../config/dbconfig.js')
 const areaController = require('../controllers/areaController');
 const quejaController = require('../controllers/quejaController');
 const reporteController = require('../controllers/reporteController');
+const upload = require('../middlewares/multerConfig');
 
 
-router.post('/agregarqueja',quejaController.guardarqueja)
+router.post('/agregarqueja', quejaController.guardarqueja)
 
 
 // Ruta principal
@@ -23,12 +24,12 @@ router.get('/aviso', (req, res) => {
 router.get('/quejas', async (req, res) => {
     connection.query('SELECT areaId as id, nombre FROM [Buzon].[dbo].[area] ORDER BY nombre', (error, areasResults) => {
         if (error) {
-          console.error(error);
-          return res.status(500).send('Error en la consulta');
+            console.error(error);
+            return res.status(500).send('Error en la consulta');
         }
         res.render('queja', {
             areas: areasResults.recordset,
-          });    
+        });
     })
 });
 
@@ -44,20 +45,18 @@ router.get('/areas', (req, res) => {
 //(POST)
 router.post('/areas', async (req, res) => {
     try {
-        await areaController.agregarArea(req, res); // <- ✔️ PASA req y res completos
+        await areaController.agregarArea(req, res); 
     } catch (error) {
         res.redirect(`/areas?success=false&message=${encodeURIComponent(error.message)}`);
     }
 });
 
-
-router.post('/quejas', async (req, res) => {
+router.post('/quejas', upload.array('adjuntos[]', 3), async (req, res) => {
     try {
-        await quejaController.agregarQueja(req.body);
-        console.log(req.body)
-        res.redirect('/quejas?success=true&message=Queja enviada exitosamente');
-        
+        // Aquí llamas al controller para guardar la queja
+        await quejaController.guardarqueja(req, res); // Asegúrate de que el nombre del método sea el correcto
     } catch (error) {
+        // Si ocurre un error, redirige al cliente con el mensaje de error
         res.redirect(`/quejas?success=false&message=${encodeURIComponent(error.message)}`);
     }
 });
@@ -67,12 +66,12 @@ router.post('/quejas', async (req, res) => {
 router.get('/reportes', async (req, res) => {
     connection.query('SELECT q.quejaId, q.quejaTitulo, q.contenido, q.fechaIn, q.estado, a.nombre AS area FROM [Buzon].[dbo].[area] q INNER JOIN area a ON q.areaId = a.areaId ORDER BY q.fechaIn desc;', (error, quejaResults) => {
         if (error) {
-          console.error(error);
-          return res.status(500).send('Error en la consulta');
+            console.error(error);
+            return res.status(500).send('Error en la consulta');
         }
         res.render('reporte', {
             quejas: quejaResults.recordset,
-          });    
+        });
     })
 });
 

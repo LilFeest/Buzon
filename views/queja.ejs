@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enviar Queja Anónima</title>
     <link rel="stylesheet" href="/css/stylesQueja.css">
-    
+
 </head>
+
 <body>
 
     <header>
         <div class="logo">
-            <img src="https://consucoop.hn/wp-content/uploads/2024/01/LOGO-CONSUCOOP.png" alt="Logo"> <!-- Reemplaza con la URL de tu logo -->
+            <img src="https://consucoop.hn/wp-content/uploads/2024/01/LOGO-CONSUCOOP.png" alt="Logo">
+            <!-- Reemplaza con la URL de tu logo -->
         </div>
         <h1 class="header-title">Buzon de Quejas</h1>
     </header>
@@ -22,95 +25,65 @@
         <div id="success-message" class="alert-success" style="display: none;">
             <!-- Mensaje de éxito se mostrará aquí -->
         </div>
-        
-        <form method="POST" action="/agregarqueja" class="complaint-form" id="complaintForm">
+
+        <form action="/quejas" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="titulo" class="form-label">Título</label>
                 <input type="text" id="titulo" name="titulo" class="form-input" required>
                 <div id="titulo-error" class="error-message">Este campo es obligatorio</div>
             </div>
-            
+
             <div class="form-group">
                 <label for="area_id" class="form-label">Área/Departamento </label>
                 <select id="area_id" name="area_id" class="form-input" required>
                     <option value="">Seleccione un área</option>
-                    <% if (areas && areas.length > 0) { %>
-                        <% areas.forEach(area => { %>
-                            <option value="<%= area.id %>"><%= area.nombre %></option>
-                        <% }); %>
-                    <% } else { %>
-                        <option value="" disabled>No hay áreas disponibles</option>
-                    <% } %>
+                    <% if (areas && areas.length> 0) { %>
+                        <% areas.forEach(area=> { %>
+                            <option value="<%= area.id %>">
+                                <%= area.nombre %>
+                            </option>
+                            <% }); %>
+                                <% } else { %>
+                                    <option value="" disabled>No hay áreas disponibles</option>
+                                    <% } %>
                 </select>
                 <div id="area_id-error" class="error-message">Este campo es obligatorio</div>
             </div>
-            
+
             <div class="form-group">
                 <label for="contenido" class="form-label">Descripción</label>
                 <textarea id="contenido" name="contenido" class="form-textarea" required></textarea>
                 <div id="contenido-error" class="error-message">Este campo es obligatorio</div>
             </div>
+
             
-            <div class="form-group">
-                <label for="adjuntos" class="form-label">Documentos Adjuntos (Opcional)</label>
-                <input type="file" id="adjuntos" name="adjuntos" class="form-file" multiple>
-                <span class="help-text">Formatos admitidos: PDF, JPG, PNG</span>
-            </div>
+                <!-- Otros campos del formulario -->
+                <div class="form-group">
+                    <label for="adjuntos" class="form-label">Documentos Adjuntos NECESARIO</label>
+                    <input type="file" id="adjuntos" name="adjuntos[]" class="form-file" multiple accept=".pdf, .png, .jpg, .jpeg" required>
+                    <span class="help-text">Formatos admitidos: PDF, JPG, PNG</span>
+                    <div id="error-message" style="color: red; display: none;">¡Por favor, adjunta al menos un archivo!</div>
+                </div>
+                
+
             <br>
             <button type="submit" class="submit-btn">Enviar</button>
         </form>
     </div>
 
-    <!--script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('complaintForm');
-            const requiredFields = ['titulo', 'area_id', 'contenido'];
-            
-            // Mostrar/ocultar mensajes de error al interactuar con los campos
-            requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                const errorElement = document.getElementById(`${fieldId}-error`);
-                
-                field.addEventListener('input', () => {
-                    if (field.value.trim()) {
-                        errorElement.style.display = 'none';
-                    } else {
-                        errorElement.style.display = 'block';
-                    }
-                });
-            });
-            
-            // Validación al enviar el formulario
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                let isValid = true;
-                
-                // Validar campos requeridos
-                requiredFields.forEach(fieldId => {
-                    const field = document.getElementById(fieldId);
-                    const errorElement = document.getElementById(`${fieldId}-error`);
-                    
-                    if (!field.value.trim()) {
-                        errorElement.style.display = 'block';
-                        isValid = false;
-                    } else {
-                        errorElement.style.display = 'none';
-                    }
-                });
-                
-                // Simular envío exitoso (para demostración frontend)
-              /*  if (isValid) {
-                    document.getElementById('success-message').textContent = '¡Tu queja ha sido enviada exitosamente!';
-                    document.getElementById('success-message').style.display = 'block';
-                    form.reset();
-                    
-                    // Ocultar mensaje después de 5 segundos
-                    setTimeout(() => {
-                        document.getElementById('success-message').style.display = 'none';
-                    }, 5000);
-                }*/
-            });
+    <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+            const adjuntos = document.getElementById('adjuntos');
+            const errorMessage = document.getElementById('error-message');
+    
+            if (adjuntos.files.length === 0) {
+                event.preventDefault(); // Evita que el formulario se envíe
+                errorMessage.style.display = 'block'; // Muestra el mensaje de error
+            } else {
+                errorMessage.style.display = 'none'; // Oculta el mensaje de error si hay archivos
+            }
         });
-    </script-->
+    </script>
 </body>
+
 </html>
