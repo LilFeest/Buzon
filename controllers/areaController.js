@@ -1,27 +1,48 @@
-const { poolPromise, sql } = require('../config/dbconfig');
+const connection = require('../config/dbconfig');
+const sql = require('mssql');
 
-const areaController = {
-    // Agregar nueva área a la base de datos
-    agregarArea: async (areaData) => {
+exports.agregarArea = async (req, res) => {
         try {
-            const pool = await poolPromise;
-            const result = await pool.request()
-                .input('nombre', sql.VarChar(30), areaData.nombre)
-                .input('abreviatura', sql.VarChar(5), areaData.abreviatura)
-                .input('correo', sql.VarChar(50), areaData.correo)
-                .query(`
-                    INSERT INTO area (nombre, abreviatura, correo)
-                    VALUES (@nombre, @abreviatura, @correo)
-                `);
-            console.log(result);
+            // Seteando los valores del req.body
+            const nombre = req.body.nombre;
+            const abreviatura = req.body.abreviatura;
+            const correo = req.body.correo;
+
+            // Validación de campos obligatorios
+            if (!nombre || !abreviatura) {
+                return res.status(400).send('Faltan datos obligatorios (nombre y abreviatura)');
+            }
+
+            // Establecer conexión
+            const pool = await sql.connect(connection);
+            
+            // Consulta SQL con parámetros
+            const request = pool.request();
+            request.input('nombre', sql.VarChar(30), nombre);
+            request.input('abreviatura', sql.VarChar(5), abreviatura);
+            request.input('correo', sql.VarChar(50), correo);
+
+            await request.query(`
+                INSERT INTO [Buzon].[dbo].[area] (nombre, abreviatura, correo)
+                VALUES (@nombre, @abreviatura, @correo)
+            `);
+            
+            // Redirección después de guardar
+            res.redirect('/areas?success=true&message=Área registrada exitosamente');
+            
+            // El return no es necesario ya que se hace res.redirect
             return { success: true, message: 'Área registrada exitosamente' };
         } catch (error) {
             console.error('Error al registrar área:', error);
-            throw new Error('Error al guardar el área en la base de datos');
+            res.status(500).send('Error en la base de datos');
         }
-    },
+    };
+    
+    // ... (otras funciones del controlador)
 
-    // Obtener todas las áreas (útil para dropdowns)
+//module.exports = areaController;
+
+    /*// Obtener todas las áreas (útil para dropdowns)
     obtenerAreas: async () => {
         try {
             const pool = await poolPromise;
@@ -32,7 +53,7 @@ const areaController = {
             console.error('Error al obtener áreas:', error);
             throw new Error('Error al cargar las áreas');
         }
-    }
-};
+    }*/
 
-module.exports = areaController;
+
+//module.exports = areaController;

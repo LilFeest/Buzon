@@ -44,12 +44,12 @@ router.get('/areas', (req, res) => {
 //(POST)
 router.post('/areas', async (req, res) => {
     try {
-        await areaController.agregarArea(req.body);
-        res.redirect('/areas?success=true&message=Área registrada exitosamente');
+        await areaController.agregarArea(req, res); // <- ✔️ PASA req y res completos
     } catch (error) {
-        res.redirect(`/areas?success=false&message=${error.message}`);
+        res.redirect(`/areas?success=false&message=${encodeURIComponent(error.message)}`);
     }
 });
+
 
 router.post('/quejas', async (req, res) => {
     try {
