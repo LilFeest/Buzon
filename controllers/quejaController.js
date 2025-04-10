@@ -76,7 +76,7 @@ exports.guardarqueja = async (req, res) => {
       }
 
       await transaction.commit();
-      res.redirect('/quejas?success=true&message=Queja registrada exitosamente');
+      res.redirect('/');
 
     } catch (error) {
       await transaction.rollback();

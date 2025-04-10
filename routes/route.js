@@ -3,11 +3,8 @@ const router = express.Router();
 const connection = require('../config/dbconfig.js')
 const areaController = require('../controllers/areaController');
 const quejaController = require('../controllers/quejaController');
+const reporteController = require('../controllers/reporteController');
 const upload = require('../middlewares/multerConfig');
-
-
-router.post('/agregarqueja', quejaController.guardarqueja)
-
 
 // Ruta principal
 router.get('/', (req, res) => {
@@ -60,5 +57,6 @@ router.post('/quejas', upload.array('adjuntos[]', 3), async (req, res) => {
     }
 });
 
+router.get('/reporte', reporteController.mostrarReporte);
 
 module.exports = router;

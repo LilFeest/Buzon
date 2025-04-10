@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enviar Queja Anónima</title>
     <link rel="stylesheet" href="/css/stylesQueja.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
@@ -83,6 +84,27 @@
                 errorMessage.style.display = 'none'; // Oculta el mensaje de error si hay archivos
             }
         });
+
+        
+      // Verifica los parámetros de la URL
+      const params = new URLSearchParams(window.location.search);
+      const success = params.get("success");
+      const message = params.get("message");
+
+      if (success === "true") {
+        Swal.fire({
+          icon: "success",
+          title: "Queja enviada",
+          text: message || "La queja sera enviada a revision donde de serLa queja ha sido enviada para su revisión. El área responsable analizará la información proporcionada y procederá conforme a los protocolos establecidos.",
+        });
+      } else if (success === "false") {
+        Swal.fire({
+          icon: "error",
+          title: "Error al registrar",
+          text: message || "Hubo un problema al guardar la queja.",
+        });
+      }
+    
     </script>
 </body>
 
