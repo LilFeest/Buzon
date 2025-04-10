@@ -1,70 +1,95 @@
-const connection = require('../config/dbconfig');
 const sql = require('mssql');
+const connection = require('../config/dbconfig');
 const fs = require('fs');
 const path = require('path');
 
 exports.guardarqueja = async (req, res) => {
+  let pool;
   try {
-    // Seteando uno por uno los valores del req.body
-    const prueba_campo1 = req.body.titulo;
-    const prueba_campo2 = req.body.area_id;
-    const prueba_campo3 = req.body.contenido;
-
-    if (!prueba_campo1 || !prueba_campo2) {
-      return res.status(400).send('Faltan datos obligatorios');
+    // Validar campos obligatorios
+    const { titulo, area_id, contenido } = req.body;
+    if (!titulo || !area_id) {
+      // Limpiar archivos temporales si la validación falla
+      if (req.files && req.files.length > 0) {
+        req.files.forEach(file => fs.unlinkSync(file.path));
+      }
+      return res.status(400).redirect('/quejas?success=false&message=Faltan datos obligatorios');
     }
 
+    // Preparar metadatos de archivos
+    const metadatosAdjuntos = req.files?.map(file => ({
+      nombreOriginal: file.originalname,
+      nombreGuardado: file.filename,
+      tipo: file.mimetype,
+      tamaño: file.size,
+      extension: path.extname(file.originalname).toLowerCase(),
+      rutaTemporal: file.path
+    })) || [];
+
+    // Conectar a la base de datos
     pool = await sql.connect(connection);
-    // Consulta SQL con parámetros
-    const request = pool.request();
-    request.input('quejaTitulo', sql.VarChar, prueba_campo1);
-    request.input('areaId', sql.VarChar, prueba_campo2);
-    request.input('contenido', sql.VarChar, prueba_campo3);
-
-    // Insertar la queja en la base de datos
-    await request.query('INSERT INTO [Buzon].[dbo].[queja] (quejaTitulo, areaId, contenido) VALUES (@quejaTitulo, @areaId, @contenido)');
-
-    // Obtener el ID de la queja recién insertada
-    const result = await request.query('SELECT SCOPE_IDENTITY() AS quejaId');
-    const quejaId = result.recordset[0].quejaId;
-
-    // Crear subcarpeta para esta queja
-    const rutaDestino = path.join(__dirname, '..', 'adjuntos', String(quejaId));
-    if (!fs.existsSync(rutaDestino)) {
-      fs.mkdirSync(rutaDestino, { recursive: true });
-    }
-
-    // Array para guardar las rutas de los archivos
-    const archivosGuardados = [];
-
-    // Mover los archivos desde adjuntos_temp a la carpeta nueva
-    if (req.files && req.files.length > 0) {
-      req.files.forEach(file => {
-        const origen = file.path;
-        const destino = path.join(rutaDestino, file.originalname);
-        fs.renameSync(origen, destino);
-        
-        // Almacenar las rutas de los archivos
-        archivosGuardados.push(destino);
-      });
-
-      // Aquí puedes hacer un UPDATE para agregar las rutas de los archivos en la base de datos
-      const adjuntos = archivosGuardados.join(','); // Concatena las rutas de los archivos
-
-      // Actualizar la base de datos con las rutas de los archivos
-      const updateRequest = pool.request();
-      updateRequest.input('quejaId', sql.Int, quejaId);
-      updateRequest.input('adjuntos[]', sql.VarChar, adjuntos);
-
-      // Realizar el UPDATE en el campo adjuntos
-      await updateRequest.query('UPDATE [Buzon].[dbo].[queja] SET adjuntos = 889  WHERE id = @quejaId');
-    }
-
-    res.redirect('/quejas?success=true&message=Queja registrada exitosamente');
     
-  } catch (error) {
-    console.error('Error al guardar los datos:', error);
-    res.status(500).send('Error en la base de datos');
-  }
-};
+    // Crear transacción
+    const transaction = new sql.Transaction(pool);
+    await transaction.begin();
 
+    try {
+      const request = new sql.Request(transaction);
+      
+      // Insertar la queja y obtener el ID generado
+      const insertResult = await request
+        .input('quejaTitulo', sql.VarChar, titulo)
+        .input('areaId', sql.Int, area_id)
+        .input('contenido', sql.VarChar, contenido)
+        .input('adjuntos', sql.NVarChar, JSON.stringify(metadatosAdjuntos))
+        .query(`
+          INSERT INTO [Buzon].[dbo].[queja] 
+            (quejaTitulo, areaId, contenido, adjuntos) 
+          OUTPUT INSERTED.quejaId
+          VALUES 
+            (@quejaTitulo, @areaId, @contenido, @adjuntos)
+        `);
+
+      const quejaId = insertResult.recordset[0].quejaId;
+
+      // Mover archivos a carpeta definitiva
+      if (req.files && req.files.length > 0) {
+        const rutaDestino = path.join(__dirname, '..', 'adjuntos', String(quejaId));
+        fs.mkdirSync(rutaDestino, { recursive: true });
+
+        for (const file of req.files) {
+          const destino = path.join(rutaDestino, file.filename);
+          fs.renameSync(file.path, destino);
+
+          const fileIndex = metadatosAdjuntos.findIndex(f => f.nombreGuardado === file.filename);
+          if (fileIndex !== -1) {
+            metadatosAdjuntos[fileIndex].rutaDefinitiva = destino;
+            metadatosAdjuntos[fileIndex].rutaTemporal = undefined;
+          }
+        }
+
+        // Actualizar adjuntos con rutas definitivas
+        await new sql.Request(transaction)
+          .input('quejaId', sql.Int, quejaId)
+          .input('adjuntosActualizados', sql.NVarChar, JSON.stringify(metadatosAdjuntos))
+          .query('UPDATE [Buzon].[dbo].[queja] SET adjuntos = @adjuntosActualizados WHERE quejaId = @quejaId');
+      }
+
+      await transaction.commit();
+      res.redirect('/quejas?success=true&message=Queja registrada exitosamente');
+
+    } catch (error) {
+      await transaction.rollback();
+      if (req.files && req.files.length > 0) {
+        req.files.forEach(file => {
+          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+        });
+      }
+      throw error;
+    }
+
+  } catch (error) {
+    console.error('Error al guardar la queja:', error);
+    res.status(500).redirect('/quejas?success=false&message=Error al procesar la queja');
+  } 
+};
