@@ -59,6 +59,9 @@ router.post('/quejas', upload.array('adjuntos[]', 3), async (req, res) => {
 });
 
 router.get('/reporte', reporteController.mostrarReporte);
-router.get('/:id', adjuntosController.obtenerAdjuntos);
+//router.get('/:id', adjuntosController.obtenerAdjuntos);
+// Ruta para descargar un archivo adjunto
+router.get('/quejas/adjuntos/:id', adjuntosController.obtenerAdjuntos);
+router.get('/quejas/adjuntos/descargar/:quejaId/:nombreGuardado', adjuntosController.descargarAdjunto);
 
 module.exports = router;

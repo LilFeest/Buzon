@@ -3,6 +3,7 @@ const app = express();
 const port = 4500;
 const routes = require('./routes/route');
 const connection = require('./config/dbconfig')
+const path = require('path');
 
 
 // Middleware
@@ -22,5 +23,5 @@ app.listen(port, () => {
 });
 
 //archivos adjuntos
-//app.use('/adjuntos', express.static(path.join(__dirname, 'adjuntos')));
+app.use('/adjuntos', express.static(path.join(__dirname, 'adjuntos')));
 //app.use('/quejas/adjuntos', require('./routes/adjuntos'));
