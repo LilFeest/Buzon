@@ -4,6 +4,7 @@ const connection = require('../config/dbconfig.js')
 const areaController = require('../controllers/areaController');
 const quejaController = require('../controllers/quejaController');
 const reporteController = require('../controllers/reporteController');
+const adjuntosController = require('../controllers/adjuntosController');
 const upload = require('../middlewares/multerConfig');
 
 // Ruta principal
@@ -58,5 +59,6 @@ router.post('/quejas', upload.array('adjuntos[]', 3), async (req, res) => {
 });
 
 router.get('/reporte', reporteController.mostrarReporte);
+router.get('/:id', adjuntosController.obtenerAdjuntos);
 
 module.exports = router;

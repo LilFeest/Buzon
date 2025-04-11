@@ -155,7 +155,7 @@
                                                 data-fecha="<%= queja.fecha %>"
                                                 data-estado="<%= queja.estado || 'Sin estado' %>"
                                                 data-nota="<%= queja.nota || 'Sin nota' %>"
-                                                data-adjuntos="<%= queja.adjuntos || '' %>">
+                                                data-adjuntos='<%= JSON.stringify(queja.adjuntos || []) %>'>
                                             <i class="fas fa-eye"></i> Ver
                                         </button>
                                     </td>
@@ -369,7 +369,8 @@
                 var modal = $(this);
                 
                 // Obtener datos del botón
-                modal.find('#modal-id').text(button.data('id'));
+                var quejaId = button.data('id');
+                modal.find('#modal-id').text(quejaId);
                 modal.find('#modal-titulo').text(button.data('titulo'));
                 modal.find('#modal-area').text(button.data('area'));
                 modal.find('#modal-contenido').text(button.data('contenido'));
@@ -378,68 +379,65 @@
                 modal.find('#modal-nota').text(button.data('nota'));
                 
                 // Procesar adjuntos
-                var adjuntos = button.data('adjuntos');
+                var adjuntosRaw = button.data('adjuntos');
                 var adjuntosContainer = modal.find('#adjuntos-list');
                 var sinAdjuntos = modal.find('#sin-adjuntos');
                 
                 adjuntosContainer.empty();
                 
-                if (adjuntos && adjuntos.trim() !== '') {
+                var adjuntos = [];
+                try {
+                    adjuntos = typeof adjuntosRaw === 'string' && adjuntosRaw.trim() !== '' ? JSON.parse(adjuntosRaw) : adjuntosRaw;
+                } catch (e) {
+                    console.error('Error al parsear adjuntos:', e);
+                }
+                
+                if (adjuntos && adjuntos.length > 0) {
                     sinAdjuntos.hide();
                     
-                    var archivos = adjuntos.split(',');
-                    archivos.forEach(function(archivo) {
-                        archivo = archivo.trim();
-                        if (archivo !== '') {
-                            var extension = archivo.split('.').pop().toLowerCase();
-                            var icono = 'fa-file';
-                            var esImagen = false;
-                            var esPDF = false;
-                            
-                            // Determinar tipo de archivo
-                            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
-                                icono = 'fa-file-image';
-                                esImagen = true;
-                            } else if (extension === 'pdf') {
-                                icono = 'fa-file-pdf';
-                                esPDF = true;
-                            } else if (['doc', 'docx'].includes(extension)) {
-                                icono = 'fa-file-word';
-                            } else if (['xls', 'xlsx'].includes(extension)) {
-                                icono = 'fa-file-excel';
-                            } else if (['ppt', 'pptx'].includes(extension)) {
-                                icono = 'fa-file-powerpoint';
-                            } else if (['zip', 'rar', '7z'].includes(extension)) {
-                                icono = 'fa-file-archive';
-                            }
-                            
-                            // Crear elemento de adjunto
-                            var adjuntoItem = $('<div class="adjunto-item"></div>');
-                            adjuntoItem.append(`
-                                <div class="adjunto-icon">
-                                    <i class="fas ${icono}"></i>
-                                </div>
-                                <div class="adjunto-info">
-                                    <div>${archivo}</div>
-                                    <div class="preview-container" id="preview-${archivo.replace(/[^a-z0-9]/gi, '_')}">
-                                        ${esImagen ? `<img src="/uploads/${archivo}" class="image-preview" onclick="window.open('/uploads/${archivo}', '_blank')">` : ''}
-                                        ${esPDF ? `<iframe src="/uploads/${archivo}#toolbar=0" class="file-preview" frameborder="0"></iframe>` : ''}
-                                    </div>
-                                </div>
-                                <div class="adjunto-acciones">
-                                    <a href="/uploads/${archivo}" download class="btn btn-sm btn-outline-primary" title="Descargar">
-                                        <i class="fas fa-download"></i>
-                                    </a>
-                                    ${esImagen || esPDF ? 
-                                        `<button class="btn btn-sm btn-outline-secondary btn-preview" data-target="preview-${archivo.replace(/[^a-z0-9]/gi, '_')}" title="Vista previa">
-                                            <i class="fas fa-eye"></i>
-                                        </button>` : ''
-                                    }
-                                </div>
-                            `);
-                            
-                            adjuntosContainer.append(adjuntoItem);
+                    adjuntos.forEach(function(adjunto) {
+                        var nombreArchivo = adjunto.nombreOriginal;
+                        var nombreGuardado = adjunto.nombreGuardado;
+                        var extension = adjunto.extension.toLowerCase().replace('.', '');
+                        var icono = 'fa-file';
+                        var esImagen = false;
+                        var esPDF = false;
+                        
+                        // Determinar tipo de archivo
+                        if (['jpg', 'jpeg', 'png'].includes(extension)) {
+                            icono = 'fa-file-image';
+                            esImagen = true;
+                        } else if (extension === 'pdf') {
+                            icono = 'fa-file-pdf';
+                            esPDF = true;
                         }
+                        
+                        // Crear elemento de adjunto
+                        var adjuntoItem = $('<div class="adjunto-item"></div>');
+                        adjuntoItem.append(`
+                            <div class="adjunto-icon">
+                                <i class="fas ${icono}"></i>
+                            </div>
+                            <div class="adjunto-info">
+                                <div>${nombreArchivo}</div>
+                                <div class="preview-container" id="preview-${nombreArchivo.replace(/[^a-z0-9]/gi, '_')}">
+                                    ${esImagen ? `<img src="/adjuntos/${quejaId}/${nombreGuardado}" class="image-preview" onclick="window.open('/adjuntos/${quejaId}/${nombreGuardado}', '_blank')">` : ''}
+                                    ${esPDF ? `<iframe src="/adjuntos/${quejaId}/${nombreGuardado}#toolbar=0" class="file-preview" frameborder="0"></iframe>` : ''}
+                                </div>
+                            </div>
+                            <div class="adjunto-acciones">
+                                <a href="/adjuntos/${quejaId}/${nombreGuardado}" download class="btn btn-sm btn-outline-primary" title="Descargar">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                ${esImagen || esPDF ? 
+                                    `<button class="btn btn-sm btn-outline-secondary btn-preview" data-target="preview-${nombreArchivo.replace(/[^a-z0-9]/gi, '_')}" title="Vista previa">
+                                        <i class="fas fa-eye"></i>
+                                    </button>` : ''
+                                }
+                            </div>
+                        `);
+                        
+                        adjuntosContainer.append(adjuntoItem);
                     });
                 } else {
                     sinAdjuntos.show();

@@ -20,3 +20,7 @@ app.use('/', routes);
 app.listen(port, () => {
     console.log(`Servidor funcionando en http://localhost:${port}`);
 });
+
+//archivos adjuntos
+//app.use('/adjuntos', express.static(path.join(__dirname, 'adjuntos')));
+//app.use('/quejas/adjuntos', require('./routes/adjuntos'));
